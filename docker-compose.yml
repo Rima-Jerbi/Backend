@@ -1,0 +1,28 @@
+
+
+version: '3'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: localhost
+      MONGO_INITDB_ROOT_PASSWORD:
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  nodejs:
+    image: rimajerbi/codenodejs:latest
+    container_name: gestionfoire-nodejs
+    environment:
+      MONGO_URI: mongodb://localhost:27017/gestiondefoire
+    ports:
+      - "3008:3000"
+    depends_on:
+      - mongodb
+
+volumes:z
+  mongodb_data:
