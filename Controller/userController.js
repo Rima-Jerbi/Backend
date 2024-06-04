@@ -12,7 +12,7 @@ class UserController {
 
   static async createUser(req, res, next) {
     try {
-      const newUser = await UserService.createUser(req.body);
+      const newUser = await UserService.createUser(req.body, req.file);
       res.json(newUser);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -32,7 +32,7 @@ class UserController {
   static async updateUser(req, res, next) {
     try {
       const userId = req.params.id;
-      const updatedUser = await UserService.updateUser(userId, req.body);
+      const updatedUser = await UserService.updateUser(userId, req.body, req.file);
       res.json(updatedUser);
     } catch (error) {
       res.status(500).json({ error: error.message });

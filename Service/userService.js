@@ -1,5 +1,6 @@
 const User = require("../model/user");
 const bcrypt = require('bcrypt');
+const path = require('path');
 
 class UserService {
   static async getAllUsers() {
@@ -12,8 +13,11 @@ class UserService {
     }
   }
 
-  static async createUser(userData) {
+  static async createUser(userData, file) {
     try {
+      if (file) {
+        userData.photo = `uploads/${file.filename}`;
+      }
       const cryptedPass = await bcrypt.hashSync(userData.password, bcrypt.genSaltSync(10));
       userData.password = cryptedPass;
       const newUser = await User.create(userData);
@@ -34,8 +38,11 @@ class UserService {
     }
   }
 
-  static async updateUser(userId, userData) {
+  static async updateUser(userId, userData, file) {
     try {
+      if (file) {
+        userData.photo = `uploads/${file.filename}`;
+      }
       if (userData.password) {
         const cryptedPass = await bcrypt.hashSync(userData.password, bcrypt.genSaltSync(10));
         userData.password = cryptedPass;
