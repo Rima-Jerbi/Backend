@@ -38,6 +38,14 @@ class UserController {
       res.status(500).json({ error: error.message });
     }
   }
+  static async uploadImage(req, res, next) {
+    try {
+      const imageUrl = `/uploads/${req.file.filename}`;
+      res.json({ imageUrl });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   static async deleteUser(req, res, next) {
     try {

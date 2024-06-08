@@ -1,17 +1,11 @@
 const User = require("../model/user");
-const express = require("express");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const Roles = require("../model/role");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-const router = express.Router();
-module.exports = class authService {
+class authService {
   static async registerExposant(data) {
     try {
-      const cryptedPass = await bcrypt.hashSync(
-        data.password,
-        bcrypt.genSaltSync(10)
-      );
+      const cryptedPass = bcrypt.hashSync(data.password, bcrypt.genSaltSync(10));
       const newUser = {
         FullName: data.FullName,
         email: data.email,
@@ -26,42 +20,38 @@ module.exports = class authService {
       return response;
     } catch (error) {
       console.log(error);
+      throw error;
     }
   }
 
-  static async userLogin(data, req, res) {
-    // First Check if the username is in the database
+  static async userLogin(data) {
     const user = await User.findOne({ email: data.email });
     if (!user) {
-      return res.status(404).json({
-        message: "Username is not found. Invalid login credentials.",
-        success: false,
-      });
+      throw new Error("Username is not found. Invalid login credentials.");
     }
 
-    // That means user is existing and trying to signin fro the right portal
-    // Now check for the password
-    let isMatch = await bcrypt.compare(data.password, user.password);
-    if (isMatch) {
-      // Sign in the token and issue it to the user
-      var token = jwt.sign(
-        {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-        "123564895",
-        { expiresIn: "1h" }
-      );
+    const isMatch = await bcrypt.compare(data.password, user.password);
+    if (!isMatch) {
+      throw new Error("Incorrect password.");
+    }
 
-      let result = {
-        _id: user._id,
+    const token = jwt.sign(
+      {
+        id: user._id,
+        name: user.FullName,
+        email: user.email,
         role: user.role,
-        token: `${token}`,
-      };
+      },
+      "123564895",
+      { expiresIn: "1h" }
+    );
 
-      return result;
-    }
+    return {
+      _id: user._id,
+      role: user.role,
+      token: `${token}`,
+    };
   }
-};
+}
+
+module.exports = authService;
