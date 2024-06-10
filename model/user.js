@@ -8,10 +8,13 @@ const userSchema = mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true,
+        required: true
     },
     photo: String,
     password: {
         type: String,
+        required: true
     },
     role: {
         type: String,
@@ -23,6 +26,13 @@ const userSchema = mongoose.Schema({
     },
     Phone: {
         type: Number
+    },
+    serialNumber: {
+        type: String,
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 });
 
